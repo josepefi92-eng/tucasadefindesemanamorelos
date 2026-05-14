@@ -1,0 +1,162 @@
+{
+  "entities": {
+    "Property": {
+      "title": "Property",
+      "description": "A vacation rental property in Morelos",
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Title of the property"
+        },
+        "description": {
+          "type": "string",
+          "description": "Full description"
+        },
+        "capacity": {
+          "type": "number",
+          "description": "Maximum number of guests"
+        },
+        "bedrooms": {
+          "type": "number",
+          "description": "Number of bedrooms"
+        },
+        "bathrooms": {
+          "type": "number",
+          "description": "Number of bathrooms"
+        },
+        "parking": {
+          "type": "number",
+          "description": "Number of parking spaces"
+        },
+        "petsAllowed": {
+          "type": "boolean",
+          "description": "Whether pets are allowed"
+        },
+        "location": {
+          "type": "string",
+          "description": "Location (city, state)"
+        },
+        "mainImage": {
+          "type": "string",
+          "description": "URL of the main image"
+        },
+        "images": {
+          "type": "array",
+          "description": "List of image URLs"
+        },
+        "amenities": {
+          "type": "array",
+          "description": "List of amenities"
+        },
+        "blockedDates": {
+          "type": "array",
+          "description": "List of blocked ISO date strings (YYYY-MM-DD)"
+        },
+        "coordinates": {
+          "type": "object",
+          "description": "Latitude and longitude for the map"
+        },
+        "googleMapsUrl": {
+          "type": "string",
+          "description": "Google Maps Embed URL"
+        },
+        "priceFrom": {
+          "type": "number",
+          "description": "Starting price for the property"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last update timestamp"
+        }
+      },
+      "required": [
+        "title",
+        "description",
+        "capacity",
+        "bedrooms",
+        "bathrooms",
+        "parking",
+        "petsAllowed",
+        "location",
+        "mainImage"
+      ]
+    },
+    "User": {
+      "title": "User",
+      "description": "Application user with roles",
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "User email"
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "admin",
+            "user"
+          ],
+          "description": "User role"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "User display name"
+        }
+      },
+      "required": [
+        "email",
+        "role"
+      ]
+    },
+    "Amenity": {
+      "title": "Amenity",
+      "description": "A property amenity with icon and category",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "icon": {
+          "type": "string",
+          "description": "Lucide icon name"
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "Básicas",
+            "Exterior / Lujo",
+            "Entretenimiento",
+            "Seguridad / Extra"
+          ]
+        }
+      },
+      "required": [
+        "name",
+        "icon",
+        "category"
+      ]
+    }
+  },
+  "firestore": {
+    "/properties/{propertyId}": {
+      "schema": "Property",
+      "description": "Collection of vacation rental properties"
+    },
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Collection of user profiles and roles"
+    },
+    "/amenities/{amenityId}": {
+      "schema": "Amenity",
+      "description": "Collection of available amenities"
+    }
+  }
+}
