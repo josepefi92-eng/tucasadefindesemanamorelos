@@ -63,7 +63,7 @@ export default function Navbar({ onLoginClick }: NavbarProps) {
               ) : (
                 <button 
                   onClick={onLoginClick}
-                  className="flex items-center gap-1 sm:gap-2 text-[12px] sm:text-sm font-bold text-gray-600 hover:text-brand-purple transition-colors"
+                  className="hidden sm:flex items-center gap-1 sm:gap-2 text-[12px] sm:text-sm font-bold text-gray-600 hover:text-brand-purple transition-colors"
                 >
                   <LogIn className="w-4 h-4 sm:w-5 h-5" />
                   <span className="hidden xs:inline">Entrar</span>

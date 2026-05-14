@@ -19,7 +19,7 @@ export default function Hero({ onSearch }: HeroProps) {
   };
 
   return (
-    <section className="relative min-h-[600px] md:h-[90vh] md:min-h-[700px] flex items-center justify-center overflow-hidden pt-[100px] pb-[100px] md:pt-[150px] md:pb-[50px]">
+    <section className="relative min-h-[600px] md:h-[90vh] md:min-h-[700px] flex items-center justify-center overflow-hidden pt-[100px] pb-[150px] md:pt-[150px] md:pb-[50px]">
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <img 

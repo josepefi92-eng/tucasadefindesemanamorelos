@@ -144,54 +144,91 @@ export default function PropertyDetail() {
           </div>
         </div>
 
-        {/* Gallery Section - Bento Style */}
-        <div className="mb-12 grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-4 h-[400px] md:h-[600px]">
-          {/* Main Image */}
-          <div 
-            onClick={() => openGallery(0)}
-            className="md:col-span-2 md:row-span-2 relative group cursor-pointer overflow-hidden rounded-[2.5rem] shadow-lg"
-          >
-            <img 
-              src={property.mainImage} 
-              alt={property.title} 
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-              referrerPolicy="no-referrer"
-            />
-            <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors" />
+        {/* Gallery Section - Carousel on mobile, Bento on desktop */}
+        <div className="mb-12">
+          {/* Mobile Carousel */}
+          <div className="md:hidden">
+            <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 no-scrollbar">
+              <div 
+                onClick={() => openGallery(0)}
+                className="flex-shrink-0 w-[85vw] aspect-[4/3] snap-center rounded-3xl overflow-hidden shadow-lg"
+              >
+                <img 
+                  src={property.mainImage} 
+                  alt={property.title} 
+                  className="w-full h-full object-cover"
+                  referrerPolicy="no-referrer"
+                />
+              </div>
+              {(property.images || []).map((img, idx) => (
+                <div 
+                  key={idx} 
+                  onClick={() => openGallery(idx + 1)}
+                  className="flex-shrink-0 w-[85vw] aspect-[4/3] snap-center rounded-3xl overflow-hidden shadow-lg"
+                >
+                  <img 
+                    src={img} 
+                    alt={`${property.title} ${idx + 1}`} 
+                    className="w-full h-full object-cover"
+                    referrerPolicy="no-referrer"
+                  />
+                </div>
+              ))}
+            </div>
+            <p className="text-center text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-2">
+              Desliza para ver más fotos
+            </p>
           </div>
 
-          {/* Secondary Images */}
-          {(property.images || []).slice(0, 3).map((img, idx) => (
+          {/* Desktop Bento Grid */}
+          <div className="hidden md:grid md:grid-cols-4 md:grid-rows-2 gap-4 h-[600px]">
+            {/* Main Image */}
             <div 
-              key={idx} 
-              onClick={() => openGallery(idx + 1)}
-              className={`relative group cursor-pointer overflow-hidden rounded-[2rem] shadow-md ${
-                idx === 2 ? 'md:col-span-2 md:row-span-1' : ''
-              }`}
+              onClick={() => openGallery(0)}
+              className="md:col-span-2 md:row-span-2 relative group cursor-pointer overflow-hidden rounded-[2.5rem] shadow-lg"
             >
               <img 
-                src={img} 
-                alt={`${property.title} ${idx + 1}`} 
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                src={property.mainImage} 
+                alt={property.title} 
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 referrerPolicy="no-referrer"
               />
               <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors" />
-              {idx === 2 && (property.images || []).length > 3 && (
-                <div className="absolute inset-0 bg-black/40 flex items-center justify-center backdrop-blur-[2px]">
-                  <span className="text-white font-bold text-xl">
-                    +{(property.images || []).length - 2} fotos
-                  </span>
-                </div>
-              )}
             </div>
-          ))}
 
-          {/* Fallback if no gallery images */}
-          {(!property.images || property.images.length === 0) && (
-            <div className="md:col-span-2 md:row-span-2 bg-gray-50 rounded-[2.5rem] flex items-center justify-center border-2 border-dashed border-gray-200">
-              <p className="text-gray-400 font-medium">No hay más fotos disponibles</p>
-            </div>
-          )}
+            {/* Secondary Images */}
+            {(property.images || []).slice(0, 3).map((img, idx) => (
+              <div 
+                key={idx} 
+                onClick={() => openGallery(idx + 1)}
+                className={`relative group cursor-pointer overflow-hidden rounded-[2rem] shadow-md ${
+                  idx === 2 ? 'md:col-span-2 md:row-span-1' : ''
+                }`}
+              >
+                <img 
+                  src={img} 
+                  alt={`${property.title} ${idx + 1}`} 
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  referrerPolicy="no-referrer"
+                />
+                <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors" />
+                {idx === 2 && (property.images || []).length > 3 && (
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center backdrop-blur-[2px]">
+                    <span className="text-white font-bold text-xl">
+                      +{(property.images || []).length - 2} fotos
+                    </span>
+                  </div>
+                )}
+              </div>
+            ))}
+
+            {/* Fallback if no gallery images */}
+            {(!property.images || property.images.length === 0) && (
+              <div className="md:col-span-2 row-span-2 bg-gray-50 rounded-[2.5rem] flex items-center justify-center border-2 border-dashed border-gray-200">
+                <p className="text-gray-400 font-medium">No hay más fotos disponibles</p>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Content Grid */}
