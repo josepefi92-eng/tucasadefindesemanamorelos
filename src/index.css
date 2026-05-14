@@ -11,6 +11,8 @@
   --color-brand-teal: #1ABC9C;
   --color-brand-pink: #E91E63;
   --color-brand-warm: #FDF8F5;
+  
+  --breakpoint-xs: 400px;
 }
 
 body {

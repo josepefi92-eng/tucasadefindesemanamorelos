@@ -43,40 +43,41 @@ export default function Navbar({ onLoginClick }: NavbarProps) {
             )}
           </div>
 
-          <div className="flex items-center gap-6">
-            <div className="hidden sm:flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-6">
+            <div className="flex items-center gap-2 sm:gap-4">
               {user ? (
-                <div className="flex items-center gap-4">
+                <div className="hidden xs:flex items-center gap-2 sm:gap-4">
                   <div className="flex flex-col items-end">
-                    <span className="text-xs font-bold text-gray-900">{user.email}</span>
+                    <span className="text-[10px] sm:text-xs font-bold text-gray-900 truncate max-w-[100px]">{user.email}</span>
                     <button 
                       onClick={handleLogout}
-                      className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-red-500 transition-colors"
+                      className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-red-500 transition-colors"
                     >
-                      Cerrar Sesión
+                      Salir
                     </button>
                   </div>
-                  <div className="w-10 h-10 rounded-full bg-brand-purple/10 flex items-center justify-center border-2 border-brand-purple/20">
-                    <User className="w-5 h-5 text-brand-purple" />
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-brand-purple/10 flex items-center justify-center border-2 border-brand-purple/20">
+                    <User className="w-4 h-4 sm:w-5 h-5 text-brand-purple" />
                   </div>
                 </div>
               ) : (
                 <button 
                   onClick={onLoginClick}
-                  className="flex items-center gap-2 text-sm font-bold text-gray-600 hover:text-brand-purple transition-colors"
+                  className="flex items-center gap-1 sm:gap-2 text-[12px] sm:text-sm font-bold text-gray-600 hover:text-brand-purple transition-colors"
                 >
-                  <LogIn className="w-5 h-5" />
-                  Entrar
+                  <LogIn className="w-4 h-4 sm:w-5 h-5" />
+                  <span className="hidden xs:inline">Entrar</span>
                 </button>
               )}
               <a 
                 href="https://wa.me/527774896062" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="bg-brand-purple text-white px-6 py-2.5 rounded-full text-sm font-bold hover:bg-brand-purple/90 transition-all shadow-lg shadow-brand-purple/20 flex items-center gap-2 group"
+                className="bg-brand-purple text-white px-3 sm:px-6 py-2 sm:py-2.5 rounded-full text-[11px] sm:text-sm font-bold hover:bg-brand-purple/90 transition-all shadow-lg shadow-brand-purple/20 flex items-center gap-2 group"
               >
-                <MessageCircle className="w-5 h-5 fill-white/20 group-hover:scale-110 transition-transform" />
-                Contacto Directo
+                <MessageCircle className="w-4 h-4 sm:w-5 h-5 fill-white/20 group-hover:scale-110 transition-transform" />
+                <span className="hidden xs:inline">Contacto Directo</span>
+                <span className="xs:hidden">Contacto</span>
               </a>
             </div>
           </div>

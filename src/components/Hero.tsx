@@ -19,7 +19,7 @@ export default function Hero({ onSearch }: HeroProps) {
   };
 
   return (
-    <section className="relative h-[90vh] min-h-[700px] flex items-center justify-center overflow-hidden pt-[150px] pb-[50px]">
+    <section className="relative min-h-[600px] md:h-[90vh] md:min-h-[700px] flex items-center justify-center overflow-hidden pt-[100px] pb-[100px] md:pt-[150px] md:pb-[50px]">
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <img 
@@ -28,7 +28,7 @@ export default function Hero({ onSearch }: HeroProps) {
           className="w-full h-full object-cover"
           referrerPolicy="no-referrer"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-brand-warm/20" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-brand-warm/20" />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 text-center">
@@ -55,7 +55,7 @@ export default function Hero({ onSearch }: HeroProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="text-lg md:text-2xl text-white/90 mb-12 max-w-3xl mx-auto font-light leading-relaxed"
+          className="text-lg md:text-2xl text-white mb-12 max-w-3xl mx-auto font-medium leading-relaxed drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]"
         >
           Encuentra la casa de tus sueños para este fin de semana. <br className="hidden md:block" />
           Seleccionamos las propiedades más exclusivas con alberca y jardín.
