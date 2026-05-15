@@ -506,10 +506,10 @@ export default function AdminDashboard() {
                       <label className="text-sm font-bold text-gray-700 uppercase tracking-wider">Descripción</label>
                       <textarea 
                         required
-                        rows={4}
+                        rows={6}
                         value={editingProperty?.description || ''}
                         onChange={e => setEditingProperty({...editingProperty, description: e.target.value})}
-                        className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-brand-purple transition-all resize-none"
+                        className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-brand-purple transition-all resize-none whitespace-pre-wrap"
                         placeholder="Describe la propiedad..."
                       />
                     </div>
@@ -615,92 +615,53 @@ export default function AdminDashboard() {
                         </div>
                       </div>
 
-                      <div className="space-y-2">
-                        <label className="text-sm font-bold text-gray-700 uppercase tracking-wider">Google Maps Embed URL (Opcional)</label>
-                        <input 
-                          type="text"
-                          value={editingProperty?.googleMapsUrl || ''}
-                          onChange={e => setEditingProperty({...editingProperty, googleMapsUrl: e.target.value})}
-                          className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-brand-purple transition-all"
-                          placeholder="https://www.google.com/maps/embed?pb=..."
-                        />
-                        <p className="text-[10px] text-gray-400">Pega el link de 'Insertar mapa' de Google Maps.</p>
-                      </div>
                     </div>
 
-                  {/* Right Column: Availability & Map */}
-                  <div className="space-y-8">
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <CalendarIcon className="w-5 h-5 text-brand-purple" />
-                        <label className="text-sm font-bold text-gray-700 uppercase tracking-wider">Calendario de Disponibilidad</label>
-                      </div>
-                      <p className="text-sm text-gray-500 mb-4">Selecciona las fechas que deseas **bloquear** (no disponibles).</p>
-                      <div className="bg-gray-50 p-6 rounded-[2rem] flex justify-center">
-                        <DayPicker
-                          mode="multiple"
-                          selected={selectedDates}
-                          onSelect={(dates) => setSelectedDates(dates || [])}
-                          locale={es}
-                          className="admin-calendar"
-                          modifiers={{
-                            blocked: selectedDates
-                          }}
-                          modifiersClassNames={{
-                            blocked: 'bg-red-500 text-white rounded-full'
-                          }}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-4">
-                      <label className="text-sm font-bold text-gray-700 uppercase tracking-wider">Coordenadas (Mapa)</label>
-                      <div className="grid grid-cols-2 gap-4">
-                        <input 
-                          type="number"
-                          step="any"
-                          placeholder="Latitud"
-                          value={editingProperty?.coordinates?.lat || ''}
-                          onChange={e => setEditingProperty({
-                            ...editingProperty, 
-                            coordinates: { ...editingProperty?.coordinates, lat: Number(e.target.value), lng: editingProperty?.coordinates?.lng || 0 }
-                          })}
-                          className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-brand-purple transition-all"
-                        />
-                        <input 
-                          type="number"
-                          step="any"
-                          placeholder="Longitud"
-                          value={editingProperty?.coordinates?.lng || ''}
-                          onChange={e => setEditingProperty({
-                            ...editingProperty, 
-                            coordinates: { ...editingProperty?.coordinates, lng: Number(e.target.value), lat: editingProperty?.coordinates?.lat || 0 }
-                          })}
-                          className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-brand-purple transition-all"
-                        />
+                    {/* Right Column: Availability */}
+                    <div className="space-y-8">
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-2 mb-2">
+                          <CalendarIcon className="w-5 h-5 text-brand-purple" />
+                          <label className="text-sm font-bold text-gray-700 uppercase tracking-wider">Calendario de Disponibilidad</label>
+                        </div>
+                        <p className="text-sm text-gray-500 mb-4">Selecciona las fechas que deseas **bloquear** (no disponibles).</p>
+                        <div className="bg-gray-50 p-6 rounded-[2rem] flex justify-center">
+                          <DayPicker
+                            mode="multiple"
+                            selected={selectedDates}
+                            onSelect={(dates) => setSelectedDates(dates || [])}
+                            locale={es}
+                            className="admin-calendar"
+                            modifiers={{
+                              blocked: selectedDates
+                            }}
+                            modifiersClassNames={{
+                              blocked: 'bg-red-500 text-white rounded-full'
+                            }}
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="flex justify-end gap-4 pt-8 border-t border-gray-100">
-                  <button 
-                    type="button"
-                    onClick={() => setIsModalOpen(false)}
-                    className="px-8 py-4 text-gray-500 font-bold hover:text-gray-700 transition-all"
-                  >
-                    Cancelar
-                  </button>
-                  <button 
-                    type="submit"
-                    className="bg-brand-purple text-white px-12 py-4 rounded-2xl font-bold flex items-center gap-2 hover:bg-brand-purple/90 transition-all shadow-xl shadow-brand-purple/30"
-                  >
-                    <Save className="w-5 h-5" />
-                    Guardar Propiedad
-                  </button>
-                </div>
-              </form>
-            </motion.div>
+                  <div className="flex justify-end gap-4 pt-8 border-t border-gray-100">
+                    <button 
+                      type="button"
+                      onClick={() => setIsModalOpen(false)}
+                      className="px-8 py-4 text-gray-500 font-bold hover:text-gray-700 transition-all"
+                    >
+                      Cancelar
+                    </button>
+                    <button 
+                      type="submit"
+                      className="bg-brand-purple text-white px-12 py-4 rounded-2xl font-bold flex items-center gap-2 hover:bg-brand-purple/90 transition-all shadow-xl shadow-brand-purple/30"
+                    >
+                      <Save className="w-5 h-5" />
+                      Guardar Propiedad
+                    </button>
+                  </div>
+                </form>
+              </motion.div>
           </div>
         )}
       </AnimatePresence>

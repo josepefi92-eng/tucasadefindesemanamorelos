@@ -268,7 +268,7 @@ export default function PropertyDetail() {
                   </div>
                 )}
               </div>
-              <p className="text-gray-600 leading-relaxed text-lg">
+              <p className="text-gray-600 leading-relaxed text-lg whitespace-pre-wrap">
                 {property.description}
               </p>
             </div>
