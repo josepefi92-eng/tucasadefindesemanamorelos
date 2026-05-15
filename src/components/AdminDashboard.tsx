@@ -55,7 +55,17 @@ export default function AdminDashboard() {
   const [editingProperty, setEditingProperty] = useState<Partial<Property> | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAmenityModalOpen, setIsAmenityModalOpen] = useState(false);
+  const [editingAmenity, setEditingAmenity] = useState<Partial<Amenity> | null>(null);
+  const [confirmDeleteAmenityId, setConfirmDeleteAmenityId] = useState<string | null>(null);
   const [selectedDates, setSelectedDates] = useState<Date[]>([]);
+  const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  useEffect(() => {
+    if (notification) {
+      const timer = setTimeout(() => setNotification(null), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [notification]);
 
   useEffect(() => {
     if (isAdmin) {
@@ -103,7 +113,15 @@ export default function AdminDashboard() {
       setIsSeedingAmenities(true);
       const path = 'amenities';
       
+      // Fetch existing amenities to avoid duplicates
+      const existingSnapshot = await getDocs(collection(db, path));
+      const existingNames = new Set(existingSnapshot.docs.map(doc => doc.data().name));
+      
       for (const am of INITIAL_AMENITIES) {
+        if (existingNames.has(am.name)) {
+          console.log(`Skipping duplicate amenity: ${am.name}`);
+          continue;
+        }
         try {
           console.log("Attempting to add amenity:", am.name);
           await addDoc(collection(db, path), am);
@@ -113,7 +131,7 @@ export default function AdminDashboard() {
       }
       
       console.log("Seeding process finished");
-      alert('Amenidades cargadas con éxito.');
+      alert('Amenidades cargadas con éxito (se omitieron duplicados).');
       await fetchAmenities();
     } catch (error) {
       console.error("CRITICAL ERROR in handleSeedAmenities:", error);
@@ -123,14 +141,58 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleSaveAmenity = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!editingAmenity) return;
+
+    const path = 'amenities';
+    try {
+      const amenityData = {
+        name: editingAmenity.name,
+        icon: editingAmenity.icon,
+        category: editingAmenity.category,
+      };
+
+      if (editingAmenity.id) {
+        await updateDoc(doc(db, path, editingAmenity.id), amenityData);
+        showNotification('Amenidad actualizada con éxito.', 'success');
+      } else {
+        await addDoc(collection(db, path), amenityData);
+        showNotification('Amenidad creada con éxito.', 'success');
+      }
+      setEditingAmenity(null);
+      await fetchAmenities();
+    } catch (error: any) {
+      console.error("Error saving amenity:", error);
+      showNotification("Error al guardar amenidad: " + error.message, 'error');
+    }
+  };
+
+  const showNotification = (message: string, type: 'success' | 'error') => {
+    setNotification({ message, type });
+  };
+
+  const handleEditAmenity = (amenity: Amenity) => {
+    setEditingAmenity(amenity);
+    // Scroll to form for better UX
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const handleDeleteAmenity = async (id: string) => {
-    if (!window.confirm('¿Estás seguro de eliminar esta amenidad?')) return;
+    if (!id) return;
+    
     const path = `amenities/${id}`;
+    console.log("Attempting to delete amenity:", id);
+    
     try {
       await deleteDoc(doc(db, 'amenities', id));
-      fetchAmenities();
-    } catch (error) {
-      handleFirestoreError(error, OperationType.DELETE, path);
+      console.log("Amenity deleted successfully:", id);
+      showNotification('Amenidad eliminada con éxito.', 'success');
+      setConfirmDeleteAmenityId(null);
+      await fetchAmenities();
+    } catch (error: any) {
+      console.error("Error deleting amenity:", error);
+      showNotification("Error al eliminar amenidad: " + error.message, 'error');
     }
   };
 
@@ -674,6 +736,83 @@ export default function AdminDashboard() {
               </div>
 
               <div className="flex-grow overflow-y-auto p-8">
+                {/* Add/Edit Amenity Form */}
+                <div className="mb-10 bg-gray-50 p-6 rounded-[2rem] border border-gray-100">
+                  <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    {editingAmenity?.id ? <Edit2 className="w-5 h-5 text-brand-purple" /> : <Plus className="w-5 h-5 text-brand-purple" />}
+                    {editingAmenity?.id ? 'Editar' : 'Nueva'} Amenidad
+                  </h3>
+                  <form onSubmit={handleSaveAmenity} className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Nombre</label>
+                      <input 
+                        required
+                        type="text"
+                        value={editingAmenity?.name || ''}
+                        onChange={e => setEditingAmenity({...editingAmenity, name: e.target.value})}
+                        className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-purple transition-all"
+                        placeholder="Ej: Alberca Climatizada"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Icono (Lucide)</label>
+                      <select 
+                        required
+                        value={editingAmenity?.icon || ''}
+                        onChange={e => setEditingAmenity({...editingAmenity, icon: e.target.value})}
+                        className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-purple transition-all"
+                      >
+                        <option value="">Seleccionar...</option>
+                        <option value="Wifi">Wifi</option>
+                        <option value="Waves">Alberca (Waves)</option>
+                        <option value="Car">Cochera (Car)</option>
+                        <option value="Tv">TV</option>
+                        <option value="Coffee">Café</option>
+                        <option value="Utensils">Cocina</option>
+                        <option value="Wind">Aire Acondicionado</option>
+                        <option value="Flame">Fogata / Parrilla</option>
+                        <option value="Shield">Seguridad</option>
+                        <option value="Users">Capacidad</option>
+                        <option value="Dog">Mascotas</option>
+                        <option value="Sparkles">Lujo</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Categoría</label>
+                      <select 
+                        required
+                        value={editingAmenity?.category || ''}
+                        onChange={e => setEditingAmenity({...editingAmenity, category: e.target.value as any})}
+                        className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-purple transition-all"
+                      >
+                        <option value="">Seleccionar...</option>
+                        <option value="Básicas">Básicas</option>
+                        <option value="Exterior / Lujo">Exterior / Lujo</option>
+                        <option value="Entretenimiento">Entretenimiento</option>
+                        <option value="Seguridad / Extra">Seguridad / Extra</option>
+                      </select>
+                    </div>
+                    <div className="md:col-span-3 flex justify-end gap-3 mt-2">
+                      {editingAmenity && (
+                        <button 
+                          type="button"
+                          onClick={() => setEditingAmenity(null)}
+                          className="px-6 py-3 text-gray-500 font-bold hover:text-gray-700 transition-all"
+                        >
+                          Cancelar
+                        </button>
+                      )}
+                      <button 
+                        type="submit"
+                        className="bg-brand-purple text-white px-8 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-brand-purple/90 transition-all shadow-lg shadow-brand-purple/20"
+                      >
+                        <Save className="w-5 h-5" />
+                        {editingAmenity?.id ? 'Actualizar' : 'Crear'} Amenidad
+                      </button>
+                    </div>
+                  </form>
+                </div>
+
                 {allAmenities.length === 0 ? (
                   <div className="text-center py-12">
                     <Sparkles className="w-12 h-12 text-gray-200 mx-auto mb-4" />
@@ -703,13 +842,50 @@ export default function AdminDashboard() {
                                   </div>
                                   <span className="font-bold text-gray-700">{amenity.name}</span>
                                 </div>
-                                <button 
-                                  onClick={() => handleDeleteAmenity(amenity.id)}
-                                  className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
-                                  title="Eliminar amenidad"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </button>
+                                <div className="flex items-center gap-2">
+                                  {confirmDeleteAmenityId === amenity.id ? (
+                                    <div className="flex items-center gap-1 bg-white p-1 rounded-xl shadow-sm border border-red-100">
+                                      <button 
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleDeleteAmenity(amenity.id);
+                                        }}
+                                        className="px-3 py-2 text-xs font-bold bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all"
+                                      >
+                                        Sí, borrar
+                                      </button>
+                                      <button 
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setConfirmDeleteAmenityId(null);
+                                        }}
+                                        className="px-3 py-2 text-xs font-bold text-gray-500 hover:bg-gray-100 rounded-lg transition-all"
+                                      >
+                                        No
+                                      </button>
+                                    </div>
+                                  ) : (
+                                    <>
+                                      <button 
+                                        onClick={() => handleEditAmenity(amenity)}
+                                        className="p-3 text-brand-purple hover:bg-brand-purple/5 rounded-xl transition-all border border-transparent hover:border-brand-purple/20 bg-white shadow-sm flex items-center justify-center font-bold"
+                                        title="Editar amenidad"
+                                      >
+                                        <Edit2 className="w-5 h-5" />
+                                      </button>
+                                      <button 
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setConfirmDeleteAmenityId(amenity.id);
+                                        }}
+                                        className="p-3 text-red-500 hover:bg-red-50 rounded-xl transition-all border border-transparent hover:border-red-100 bg-white shadow-sm flex items-center justify-center"
+                                        title="Eliminar amenidad"
+                                      >
+                                        <Trash2 className="w-5 h-5" />
+                                      </button>
+                                    </>
+                                  )}
+                                </div>
                               </div>
                             ))}
                           </div>
@@ -731,6 +907,24 @@ export default function AdminDashboard() {
               </div>
             </motion.div>
           </div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {notification && (
+          <motion.div
+            initial={{ opacity: 0, y: 50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className={`fixed bottom-8 left-1/2 -translate-x-1/2 z-[200] px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 font-bold border-2 ${
+              notification.type === 'success' 
+                ? 'bg-green-500 text-white border-green-400' 
+                : 'bg-red-500 text-white border-red-400'
+            }`}
+          >
+            {notification.type === 'success' ? <Sparkles className="w-5 h-5" /> : <X className="w-5 h-5" />}
+            {notification.message}
+          </motion.div>
         )}
       </AnimatePresence>
 

@@ -44,12 +44,13 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      return isAuthenticated() &&
+      return isAuthenticated() && (
+        (request.auth.token.email.lower() == "edersalgadosalgado@gmail.com" || 
+         request.auth.token.email.lower() == "joseperalta.isc94@gmail.com" ||
+         request.auth.token.email.lower() == "josepefi92@gmail.com") ||
         (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
-         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
-         (request.auth.token.email == "edersalgadosalgado@gmail.com" || 
-          request.auth.token.email == "joseperalta.isc94@gmail.com" ||
-          request.auth.token.email == "josepefi92@gmail.com"));
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin')
+      );
     }
 
     function isValidProperty(data) {
@@ -89,7 +90,8 @@ service cloud.firestore {
 
     match /amenities/{amenityId} {
       allow read: if true;
-      allow write: if isAdmin() && isValidAmenity(request.resource.data);
+      allow create, update: if isAdmin() && isValidAmenity(request.resource.data);
+      allow delete: if isAdmin();
     }
 
     match /properties/{propertyId} {
