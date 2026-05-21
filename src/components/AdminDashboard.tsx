@@ -245,6 +245,34 @@ export default function AdminDashboard() {
     return uniqueSlug;
   };
 
+  const handleMigrateSlugs = async () => {
+    if (!window.confirm('¿Quieres generar slugs para todas las propiedades existentes? Esto arreglará los enlaces rotos.')) return;
+    setLoading(true);
+    try {
+      const q = query(collection(db, 'properties'));
+      const querySnapshot = await getDocs(q);
+      const batch = writeBatch(db);
+      
+      let count = 0;
+      for (const docSnap of querySnapshot.docs) {
+        const data = docSnap.data();
+        // Generate unique slug (checking against what's already in the snapshot to avoid collisions within migration)
+        const newSlug = await getUniqueSlug(data.title, docSnap.id);
+        batch.update(doc(db, 'properties', docSnap.id), { slug: newSlug });
+        count++;
+      }
+      
+      await batch.commit();
+      showNotification(`${count} propiedades actualizadas con éxito.`, 'success');
+      fetchProperties();
+    } catch (error: any) {
+      console.error("Error migrating slugs:", error);
+      showNotification("Error al migrar slugs: " + error.message, 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSave = async (e: FormEvent) => {
     e.preventDefault();
     if (!editingProperty) return;
@@ -303,6 +331,14 @@ export default function AdminDashboard() {
           <p className="text-gray-500 mt-2">Gestiona las casas, departamentos y su disponibilidad.</p>
         </div>
         <div className="flex flex-wrap gap-4">
+          <button 
+            onClick={handleMigrateSlugs}
+            className="bg-brand-teal/10 text-brand-teal px-6 py-3 rounded-2xl font-bold flex items-center gap-2 hover:bg-brand-teal/20 transition-all"
+            title="Generar slugs amigables para todas las propiedades"
+          >
+            <Sparkles className="w-5 h-5" />
+            Arreglar Enlaces (Slugs)
+          </button>
           <button 
             onClick={() => setIsAmenityModalOpen(true)}
             className="bg-gray-100 text-gray-600 px-6 py-3 rounded-2xl font-bold flex items-center gap-2 hover:bg-gray-200 transition-all"

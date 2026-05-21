@@ -13,7 +13,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
       whileHover={{ y: -8 }}
       className="group bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100"
     >
-      <Link to={`/propiedad/${property.slug || property.id}`} className="block relative aspect-[4/3] overflow-hidden">
+      <Link to={`/propiedad/${property.slug}`} className="block relative aspect-[4/3] overflow-hidden">
         <img 
           src={property.mainImage} 
           alt={property.title}
@@ -76,7 +76,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
             <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Disponible</span>
           </div>
           <Link 
-            to={`/propiedad/${property.slug || property.id}`}
+            to={`/propiedad/${property.slug}`}
             className="bg-brand-purple text-white px-6 py-3 rounded-xl text-sm font-bold hover:bg-brand-purple/90 transition-all shadow-lg shadow-brand-purple/20"
           >
             Ver detalles

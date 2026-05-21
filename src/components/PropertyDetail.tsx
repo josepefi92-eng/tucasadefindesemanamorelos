@@ -54,13 +54,6 @@ export default function PropertyDetail() {
         if (!querySnapshot.empty) {
           const docSnap = querySnapshot.docs[0];
           setProperty({ id: docSnap.id, ...docSnap.data() } as Property);
-        } else {
-          // Fallback: search by ID (for legacy data)
-          const docRef = doc(db, 'properties', slug);
-          const docSnap = await getDoc(docRef);
-          if (docSnap.exists()) {
-            setProperty({ id: docSnap.id, ...docSnap.data() } as Property);
-          }
         }
 
         // Fetch All Amenities
