@@ -3,7 +3,7 @@ import { Users, Bed, Bath, MapPin, Check, ChevronLeft, MessageCircle, Star, Car,
 import { motion, AnimatePresence } from 'motion/react';
 import { useEffect, useState } from 'react';
 import { db } from '../lib/firebase';
-import { doc, getDoc, getDocs, collection } from 'firebase/firestore';
+import { doc, getDoc, getDocs, collection, query, where } from 'firebase/firestore';
 import { Property, Amenity } from '../types';
 import WhatsAppButton from './WhatsAppButton';
 import ImageGallery from 'react-image-gallery';
@@ -33,7 +33,7 @@ let DefaultIcon = L.icon({
 L.Marker.prototype.options.icon = DefaultIcon;
 
 export default function PropertyDetail() {
-  const { id } = useParams();
+  const { slug } = useParams();
   const navigate = useNavigate();
   const [property, setProperty] = useState<Property | null>(null);
   const [allAmenities, setAllAmenities] = useState<Amenity[]>([]);
@@ -45,12 +45,22 @@ export default function PropertyDetail() {
     window.scrollTo(0, 0);
     
     const fetchData = async () => {
-      if (!id) return;
+      if (!slug) return;
       try {
-        // Fetch Property
-        const docSnap = await getDoc(doc(db, 'properties', id));
-        if (docSnap.exists()) {
+        // Fetch Property by slug
+        const q = query(collection(db, 'properties'), where('slug', '==', slug));
+        const querySnapshot = await getDocs(q);
+        
+        if (!querySnapshot.empty) {
+          const docSnap = querySnapshot.docs[0];
           setProperty({ id: docSnap.id, ...docSnap.data() } as Property);
+        } else {
+          // Fallback: search by ID (for legacy data)
+          const docRef = doc(db, 'properties', slug);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            setProperty({ id: docSnap.id, ...docSnap.data() } as Property);
+          }
         }
 
         // Fetch All Amenities
@@ -65,7 +75,7 @@ export default function PropertyDetail() {
     };
 
     fetchData();
-  }, [id]);
+  }, [slug]);
 
   if (loading) {
     return (

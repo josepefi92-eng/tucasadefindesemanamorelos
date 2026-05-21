@@ -1,6 +1,6 @@
 import { useState, useEffect, FormEvent } from 'react';
 import { db, auth } from '../lib/firebase';
-import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, orderBy, writeBatch, setDoc } from 'firebase/firestore';
+import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, orderBy, writeBatch, setDoc, where } from 'firebase/firestore';
 import { useAuth } from '../hooks/useAuth';
 import { Property, Amenity } from '../types';
 import { Plus, Edit2, Trash2, X, Save, Image as ImageIcon, Database, Calendar as CalendarIcon, Car, Dog, Sparkles } from 'lucide-react';
@@ -11,6 +11,7 @@ import AmenityIcon from './AmenityIcon';
 import { DayPicker } from 'react-day-picker';
 import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { generateSlug } from '../lib/utils';
 import 'react-day-picker/dist/style.css';
 
 enum OperationType {
@@ -202,14 +203,17 @@ export default function AdminDashboard() {
     const path = 'properties';
     try {
       const batch = writeBatch(db);
-      initialProperties.forEach((prop) => {
+      for (const prop of initialProperties) {
         const { id, ...data } = prop;
         const newDocRef = doc(collection(db, path));
+        // Simple slug for seeding (assumes initial data has unique titles or we don't care as much for seed)
+        const baseSlug = generateSlug(data.title);
         batch.set(newDocRef, {
           ...data,
+          slug: baseSlug,
           createdAt: new Date().toISOString(),
         });
-      });
+      }
       await batch.commit();
       alert('Propiedades cargadas con éxito.');
       fetchProperties();
@@ -220,6 +224,27 @@ export default function AdminDashboard() {
     }
   };
 
+  const getUniqueSlug = async (title: string, currentId?: string) => {
+    const baseSlug = generateSlug(title);
+    let uniqueSlug = baseSlug;
+    let counter = 1;
+    let isUnique = false;
+
+    while (!isUnique) {
+      const q = query(collection(db, 'properties'), where('slug', '==', uniqueSlug));
+      const querySnapshot = await getDocs(q);
+      
+      const otherDocs = querySnapshot.docs.filter(doc => doc.id !== currentId);
+      if (otherDocs.length === 0) {
+        isUnique = true;
+      } else {
+        uniqueSlug = `${baseSlug}-${counter}`;
+        counter++;
+      }
+    }
+    return uniqueSlug;
+  };
+
   const handleSave = async (e: FormEvent) => {
     e.preventDefault();
     if (!editingProperty) return;
@@ -228,8 +253,11 @@ export default function AdminDashboard() {
     const blockedDates = selectedDates.map(d => format(d, 'yyyy-MM-dd'));
     
     try {
+      const slug = await getUniqueSlug(editingProperty.title || '', editingProperty.id);
+
       const propertyData = {
         ...editingProperty,
+        slug,
         images: (editingProperty.images || []).filter(url => url.trim() !== ''),
         blockedDates,
         updatedAt: new Date().toISOString(),
@@ -237,7 +265,7 @@ export default function AdminDashboard() {
 
       if (editingProperty.id) {
         const { id, ...data } = propertyData;
-        await updateDoc(doc(db, path, id as string), data);
+        await updateDoc(doc(db, path, id as string), data as any);
       } else {
         await addDoc(collection(db, path), {
           ...propertyData,

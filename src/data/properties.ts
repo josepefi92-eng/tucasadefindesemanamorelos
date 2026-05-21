@@ -3,6 +3,7 @@ import { Property } from "../types";
 export const properties: Property[] = [
   {
     id: "casa-sol-cuernavaca",
+    slug: "casa-sol-cuernavaca",
     title: "Casa del Sol - Cuernavaca",
     description: "Hermosa villa con jardín exuberante y alberca climatizada. Perfecta para reuniones familiares en la ciudad de la eterna primavera.",
     capacity: 12,
@@ -23,6 +24,7 @@ export const properties: Property[] = [
   },
   {
     id: "quinta-las-palmas",
+    slug: "quinta-las-palmas-oaxtepec",
     title: "Quinta Las Palmas - Oaxtepec",
     description: "Moderna casa vacacional a pocos minutos de Six Flags Hurricane Harbor. Amplios espacios y diseño contemporáneo.",
     capacity: 10,
@@ -42,6 +44,7 @@ export const properties: Property[] = [
   },
   {
     id: "villa-teques",
+    slug: "villa-teques-vista-al-lago",
     title: "Villa Teques Vista al Lago",
     description: "Disfruta de los mejores atardeceres frente al lago de Tequesquitengo. Acceso directo al lago y muelle privado.",
     capacity: 8,
@@ -61,6 +64,7 @@ export const properties: Property[] = [
   },
   {
     id: "hacienda-cocoyoc",
+    slug: "hacienda-estilo-colonial-cocoyoc",
     title: "Hacienda Estilo Colonial - Cocoyoc",
     description: "Vive la experiencia de una hacienda mexicana con todas las comodidades modernas. Techos altos y arcos coloniales.",
     capacity: 15,
@@ -80,8 +84,9 @@ export const properties: Property[] = [
   },
   {
     id: "loft-moderno-jiutepec",
+    slug: "loft-moderno-con-alberca-jiutepec",
     title: "Loft Moderno con Alberca - Jiutepec",
-    description: "Espacio minimalista ideal para parejas o grupos pequeños. Ubicado en zona tranquila con clima inmejorable.",
+    description: "Espacio minimalista ideal para parejas or grupos pequeños. Ubicado en zona tranquila con clima inmejorable.",
     capacity: 4,
     bedrooms: 2,
     bathrooms: 2,
@@ -98,6 +103,7 @@ export const properties: Property[] = [
   },
   {
     id: "casa-jardin-tepoztlan",
+    slug: "casa-jardin-mistico-tepoztlan",
     title: "Casa Jardín Místico - Tepoztlán",
     description: "Rodeada de naturaleza y con vista al Tepozteco. Un refugio de paz y tranquilidad.",
     capacity: 6,
